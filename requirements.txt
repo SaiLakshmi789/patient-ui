@@ -1,0 +1,5 @@
+streamlit
+pyJWT
+snowflake-snowpark-python
+pandas
+plotly

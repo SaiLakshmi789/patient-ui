@@ -5,5 +5,3 @@ pandas
 plotly
 matplotlib
 numpy
-json
-pathlib

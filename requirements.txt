@@ -3,3 +3,7 @@ pyJWT
 snowflake-snowpark-python
 pandas
 plotly
+matplotlib
+numpy
+json
+pathlib

@@ -121,12 +121,12 @@ with tab_patient:
     token = st.text_input("Paste your secure access token", value=qp_token or "", type="password")
     if not token:
         st.info("Missing token. Use your emailed link (it includes ?token=...) or paste the token above.")
-        #st.stop()
+        st.stop()
 
     patient_id, err = validate_token(token)
     if err:
         st.error(f"Access denied: {err}")
-        #st.stop()
+        st.stop()
 
     st.success(f"Access granted for Patient ID: **{patient_id}**")
 
@@ -135,7 +135,7 @@ with tab_patient:
 
     if pred.empty:
         st.warning("No recent prediction found yet. Please check back later.")
-        #st.stop()
+        st.stop()
 
     row = pred.iloc[0]
     pred_val = int(row.get("HOSPITAL_DEATH", 0))

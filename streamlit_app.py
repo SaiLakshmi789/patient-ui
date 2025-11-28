@@ -109,10 +109,11 @@ def fetch_recent_vitals(session: Session, patient_id: str, limit: int = 50) -> p
 # ---------------------------------------------------------------
 # 5) UI
 # ---------------------------------------------------------------
-tab_patient, tab_admin = st.tabs(["🔑 Patient", "🛠️ Admin"])
+# 5) UI — single patient view (no tabs)
+patient_container = st.container()
 
 # ---------------- Patient tab ----------------
-with tab_patient:
+with patient_container:
     # Get token from URL (?token=...) if present, else empty
     qp_token = st.query_params.get("token")
     if isinstance(qp_token, list):

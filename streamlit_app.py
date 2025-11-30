@@ -81,7 +81,7 @@ def fetch_latest_prediction(session: Session, patient_id: str) -> pd.DataFrame:
     """
     q = f"""
         SELECT *
-        FROM {RAW_TABLE}
+        FROM {STD_TABLE}
         WHERE PATIENT_ID = ?
     """
     return session.sql(q, params=[patient_id]).to_pandas()

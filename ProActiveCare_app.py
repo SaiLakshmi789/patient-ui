@@ -38,7 +38,7 @@ except Exception:
 #Add these helper constants near the top (edit the URL)
 
 # Point this to your deployed Streamlit app (or http://localhost:8501 while testing)
-APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:8501")
+APP_BASE_URL = os.getenv("APP_BASE_URL", "https://patient-report-dashboard.streamlit.app/")
 
 # Keep this secret out of source control; override via environment or secrets manager
 JWT_SECRET = os.getenv("JWT_SECRET", "CHANGE_ME_TO_A_LONG_RANDOM_SECRET")

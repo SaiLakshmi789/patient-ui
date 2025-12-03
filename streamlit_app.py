@@ -233,13 +233,11 @@ with patient_container:
         st.markdown("### 👤 Patient Snapshot")
         age = latest.get("AGE", None)
         bmi = latest.get("BMI", None)
-        # change ICU_LOS_DAYS to whatever column you actually have, or drop if none
-        icu_los = latest.get("ICU_LOS_DAYS", None)
 
-        c1, c2, c3 = st.columns(3)
+        c1, c2 = st.columns(2)
         c1.metric("Age", f"{age:.0f}" if pd.notna(age) else "—", "years")
         c2.metric("BMI", f"{bmi:.1f}" if pd.notna(bmi) else "—")
-        c3.metric("ICU Stay", f"{icu_los:.1f} days" if pd.notna(icu_los) else "—")
+        #c3.metric("ICU Stay", f"{icu_los:.1f} days" if pd.notna(icu_los) else "—")
 
         # ---------- 3) Recent vitals table ----------
         st.markdown("### 📋 Recent Vitals")
@@ -280,30 +278,40 @@ with patient_container:
         if norm_rows:
             df_norm = pd.DataFrame(norm_rows)
 
+            # Normal midpoint value for bar, and full range for label
+            df_norm["NormalMid"] = (df_norm["Low"] + df_norm["High"]) / 2.0
+
             fig_norm = go.Figure()
-            # Normal range bar
+
+            # Patient bar (blue)
             fig_norm.add_trace(go.Bar(
-                x=df_norm["High"] - df_norm["Low"],
-                y=df_norm["Vital"],
-                base=df_norm["Low"],
-                orientation="h",
-                opacity=0.4,
-                name="Normal range",
-            ))
-            # Patient marker
-            fig_norm.add_trace(go.Scatter(
                 x=df_norm["Patient"],
                 y=df_norm["Vital"],
-                mode="markers",
-                name="Patient",
-                marker=dict(size=10),
+                orientation="h",
+                name="Patient Value",
+                marker=dict(color="#1f77b4"),  # blue
+                text=[f"{v:.1f}" for v in df_norm["Patient"]],
+                textposition="auto",
             ))
+
+            # Normal bar (orange)
+            fig_norm.add_trace(go.Bar(
+                x=df_norm["NormalMid"],
+                y=df_norm["Vital"],
+                orientation="h",
+                name="Normal Range",
+                marker=dict(color="#ff7f0e"),  # orange
+                text=[f"{lo:.1f}–{hi:.1f}" for lo, hi in zip(df_norm["Low"], df_norm["High"])],
+                textposition="auto",
+            ))
+
             fig_norm.update_layout(
+                barmode="group",  # Grouped bars for each vital
                 xaxis_title="Value",
                 yaxis_title="Vital",
-                barmode="overlay",
                 margin=dict(l=10, r=10, t=30, b=10),
             )
+
             st.plotly_chart(fig_norm, use_container_width=True)
         else:
             st.caption("Vitals not available to compare against normal ranges.")
@@ -331,37 +339,8 @@ with patient_container:
         else:
             st.caption("Key clinical fields not available for this patient.")
 
-        # ---------- 6) Optional: population comparison (advanced) ----------
-        with st.expander("📈 Advanced: Compare this patient to the population"):
-            pop_cols = [c for c in ["BMI", "AGE", "MAP_APACHE", "HEART_RATE_APACHE"] if c in vitals.columns]
-            for colname in pop_cols:
-                try:
-                    cohort = (
-                        session.table(RAW_TABLE)
-                        .select(colname)
-                        .dropna()
-                        .limit(5000)
-                        .to_pandas()[colname]
-                    )
-                    if cohort.empty or pd.isna(latest[colname]):
-                        continue
+       
 
-                    fig_d = ff.create_distplot([cohort.values], [colname], show_hist=False)
-                    fig_d.add_vline(
-                        x=float(latest[colname]),
-                        line_dash="dash",
-                        line_color="red",
-                        annotation_text="This patient",
-                        annotation_position="top left"
-                    )
-                    fig_d.update_layout(
-                        title=f"{colname.replace('_',' ').title()} — Cohort Distribution"
-                    )
-                    st.plotly_chart(fig_d, use_container_width=True)
-                except Exception:
-                    # keep the UI clean if any column isn't present or any other issue
-                    pass
-
-    st.caption("If you have concerns, contact your provider. In emergencies, call your local emergency number.")
+    st.caption("If you have concerns, contact your provider. In emergencies, call your local emergency number : 1-800-000-0000.")
 
 

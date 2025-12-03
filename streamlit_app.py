@@ -291,7 +291,8 @@ with patient_container:
                 name="Patient Value",
                 marker=dict(color="#1f77b4"),  # blue
                 text=[f"{v:.1f}" for v in df_norm["Patient"]],
-                textposition="auto",
+                textposition="outside",
+                cliponaxis=False,
             ))
 
             # Normal bar (orange)
@@ -302,7 +303,8 @@ with patient_container:
                 name="Normal Range",
                 marker=dict(color="#ff7f0e"),  # orange
                 text=[f"{lo:.1f}–{hi:.1f}" for lo, hi in zip(df_norm["Low"], df_norm["High"])],
-                textposition="auto",
+                textposition="outside",
+                cliponaxis=False,
             ))
 
             fig_norm.update_layout(
@@ -310,9 +312,11 @@ with patient_container:
                 xaxis_title="Value",
                 yaxis_title="Vital",
                 margin=dict(l=10, r=10, t=30, b=10),
+                autosize=True,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
             )
 
-            st.plotly_chart(fig_norm, use_container_width=True)
+            st.plotly_chart(fig_norm, use_container_width=True, config={"responsive": True})
         else:
             st.caption("Vitals not available to compare against normal ranges.")
 

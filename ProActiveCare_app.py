@@ -1,6 +1,6 @@
 import os, time, urllib.parse
 import jwt  # PyJWT
-from Snowflake import session
+from snowflake import session
 import pandas as pd
 # import torch
 from sklearn.model_selection import train_test_split
